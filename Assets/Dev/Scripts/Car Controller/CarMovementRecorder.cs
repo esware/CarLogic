@@ -8,8 +8,6 @@ public class CarMovementRecorder : MonoBehaviour
 
     public bool currentCarIsBeingDriven;
 
-    public float playbackInterval = 1f;
-    
     void Update()
     {
         if (currentCarIsBeingDriven)
@@ -23,6 +21,7 @@ public class CarMovementRecorder : MonoBehaviour
         movementData.recordedPositions.Add(position);
         movementData.recordedRotations.Add(rotation);
     }
+
     public void StartPlayback()
     {
         StartCoroutine(PlaybackMovement());
@@ -32,13 +31,13 @@ public class CarMovementRecorder : MonoBehaviour
     {
         for (int i = 0; i < movementData.recordedPositions.Count; i++)
         {
-            // Use the data to animate the car's movement during playback
-            transform.position = movementData.recordedPositions[i];
-            transform.rotation = movementData.recordedRotations[i];
+            Vector3 targetPosition = movementData.recordedPositions[i];
+            Quaternion targetRotation = movementData.recordedRotations[i];
+            
+            transform.position = targetPosition;
+            transform.rotation = targetRotation;
 
-            // Pause for a short time to control playback speed
-            yield return new WaitForSeconds(playbackInterval);
+            yield return new WaitForEndOfFrame();
         }
     }
-
 }

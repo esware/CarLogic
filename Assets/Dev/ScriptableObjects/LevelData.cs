@@ -7,6 +7,9 @@ namespace ScriptableObjects.Scripts
     public class LevelData : ScriptableObject
     {
         [Header("Level")] [SerializeField] public GameObject levelObject;
+        [SerializeField] private int CarCount;
+        [SerializeField] private GameObject[] carPrefabs;
+        
 
     }
 }

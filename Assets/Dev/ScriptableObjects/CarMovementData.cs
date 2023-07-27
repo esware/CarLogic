@@ -7,5 +7,11 @@ public class CarMovementData : ScriptableObject
 {
     public List<Vector3> recordedPositions = new List<Vector3>();
     public List<Quaternion> recordedRotations = new List<Quaternion>();
+
+    public void ResetData()
+    {
+        recordedPositions.Clear();
+        recordedRotations.Clear();
+    }
     
 }

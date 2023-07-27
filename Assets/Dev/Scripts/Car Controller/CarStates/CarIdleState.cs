@@ -6,14 +6,16 @@ namespace Dev.Scripts.Car_Controller.CarStates
     {
         public CarIdleState(CarController controller) : base(controller)
         {
+            Time.timeScale = 0f;
         }
 
         public override void Update()
         {
             if (Input.GetMouseButtonDown(0))
             {
+                Time.timeScale = 1f;
                 GetController.ChangeState(new CarMoveState(GetController));
-                GetController.carMovementRecorder.currentCarIsBeingDriven = true;
+                GetController.GetComponent<CarMovementRecorder>().currentCarIsBeingDriven = true;
             }
         }
 

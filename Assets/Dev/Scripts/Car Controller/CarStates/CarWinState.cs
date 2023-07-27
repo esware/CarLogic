@@ -6,8 +6,8 @@ namespace Dev.Scripts.Car_Controller.CarStates
     {
         public CarWinState(CarController controller) : base(controller)
         {
-            Debug.Log("Game win ");
-            GetController.CreateCar();
+            GetController.ResetPositionAndRotation();
+            GetController.GetComponent<CarMovementRecorder>().currentCarIsBeingDriven = false;
         }
 
         public override void Update()
