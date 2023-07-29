@@ -2,7 +2,7 @@
 
 namespace Dev.Scripts.Car_Controller.CarStates
 {
-    public class CarMoveState:BaseState
+    public class CarMoveState:BaseState<CarController>
     {
         public CarMoveState(CarController controller) : base(controller)
         {
@@ -11,13 +11,18 @@ namespace Dev.Scripts.Car_Controller.CarStates
 
         public override void Update()
         {
-           GetController.RecordMovement();
+           Controller.RecordMovement();
         }
 
         public override void FixedUpdate()
         {
-            GetController.MoveCar();
-            GetController.TurnCar();
+            Controller.MoveCar();
+            Controller.TurnCar();
+        }
+
+        public override void Exit()
+        {
+            
         }
     }
 }

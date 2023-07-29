@@ -3,23 +3,24 @@ using UnityEngine;
 
 namespace Dev.Scripts.Car_Controller.CarStates
 {
-    public class CarWinState:BaseState
+    public class CarWinState:BaseState<CarController>
     {
         public CarWinState(CarController controller) : base(controller)
         {
-            GameEvents.CompleteEvent?.Invoke(GetController.gameObject);
-            GetController.startPoint.gameObject.SetActive(false);
-            GetController.endPoint.gameObject.SetActive(false);
-            
-            GetController.ChangeState(new CarIdleState(GetController));
+            controller.WinState();
         }
 
         public override void Update()
         {
-            
+            Controller.ChangeState(new CarIdleState(Controller));
         }
 
         public override void FixedUpdate()
+        {
+            
+        }
+
+        public override void Exit()
         {
             
         }

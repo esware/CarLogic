@@ -7,6 +7,7 @@ public class CarMovementRecorder : MonoBehaviour
     public List<Vector3> recordedPositions = new List<Vector3>();
     public List<Quaternion> recordedRotations = new List<Quaternion>();
 
+    private bool _isPlayBackOver = false;
     public void StartPlayback()
     {
         StartCoroutine(PlaybackMovement());
@@ -29,5 +30,10 @@ public class CarMovementRecorder : MonoBehaviour
 
             yield return new WaitForEndOfFrame();
         }
+
+        _isPlayBackOver = true;
     }
+
+
+    public bool IsPlayBackOver() => _isPlayBackOver;
 }

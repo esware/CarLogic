@@ -1,20 +1,15 @@
 ﻿using UnityEngine;
 
-namespace Dev.Scripts.Car_Controller.CarStates
+public abstract class BaseState<T>  where T: MonoBehaviour
 {
-    public abstract class BaseState
+    protected readonly T Controller;
+
+    protected BaseState(T controller)
     {
-        private static CarController _controller;
-
-        public static CarController GetController => _controller;
-        
-        public BaseState(CarController controller)
-        {
-            _controller = controller;
-        }
-
-
-        public abstract void Update();
-        public abstract void FixedUpdate();
+        Controller = controller;
     }
+
+    public abstract void Update();
+    public abstract void FixedUpdate();
+    public abstract void Exit();
 }

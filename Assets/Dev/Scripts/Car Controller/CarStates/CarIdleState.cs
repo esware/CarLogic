@@ -1,37 +1,38 @@
-﻿using Managers;
+﻿using Dev.Scripts.Car_Controller.CarStates;
 using UnityEngine;
 
-namespace Dev.Scripts.Car_Controller.CarStates
+public class CarIdleState:BaseState<CarController>
 {
-    public class CarIdleState:BaseState
+    public CarIdleState(CarController controller) : base(controller)
     {
-        public CarIdleState(CarController controller) : base(controller)
-        {
-            var transform = GetController.transform;
-            transform.position = GetController.startPoint.position;
-            transform.rotation = Quaternion.identity;
-        }
+        var transform1 = controller.transform;
+        transform1.position = controller.startPoint.position;
+        transform1.rotation = Quaternion.identity;
+    }
 
-        public override void Update()
+    public override void Update()
+    {
+
+        if (Input.GetMouseButtonDown(0))
         {
-            if (Input.GetMouseButtonDown(0))
+            if (!Controller.isTrackCompleted)
             {
-                Debug.Log(GetController.isTrackCompleted);
-                if (!GetController.isTrackCompleted)
-                {
-                    GetController.ChangeState(new CarMoveState(GetController));
-                }
-                else
-                {
-                    Debug.Log("Completed"+GetController.gameObject.name);
-                    GetController.ChangeState(new CarAIState(GetController));
-                }
+                Controller.ChangeState(new CarMoveState(Controller));
+            }
+            else
+            {
+                Controller.ChangeState(new CarAIState(Controller));
             }
         }
+    }
 
-        public override void FixedUpdate()
-        {
-            
-        }
+    public override void FixedUpdate()
+    {
+        
+    }
+
+    public override void Exit()
+    {
+        
     }
 }

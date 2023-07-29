@@ -55,6 +55,7 @@ namespace Dev.Scripts.Car_Controller
             var carController = car.GetComponent<CarController>();
             carController.startPoint = _startPoints[0];
             carController.endPoint = _endPoints[0];
+            car.gameObject.name = _carCounter.ToString();
         }
 
         private void CompleteTrack(GameObject car)
@@ -71,6 +72,7 @@ namespace Dev.Scripts.Car_Controller
             var newCar = Instantiate(carPrefab, startPoint.position, Quaternion.identity);
             newCar.GetComponent<CarController>().startPoint = startPoint;
             newCar.GetComponent<CarController>().endPoint = _endPoints[_carCounter];
+            
         }
 
         private void FailTrack()

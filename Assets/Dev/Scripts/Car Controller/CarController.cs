@@ -5,9 +5,10 @@ using UnityEngine;
 
 public class CarController : MonoBehaviour
 {
+    private BaseState<CarController> _currentState;
+    
     [HideInInspector] public CarMovementRecorder carMovementRecorder;
-    [HideInInspector] public bool isTrackCompleted = false;
-    private BaseState _currentState;
+     public bool isTrackCompleted = false;
 
     [Space,Header("Car Movement Settings")]
     public float speed = 10f;
@@ -24,17 +25,16 @@ public class CarController : MonoBehaviour
     
     private void Start()
     {
-        SignUpEvents();
         Init();
-        _currentState = new CarIdleState(this);
     }
 
     private void Init()
     {
         carMovementRecorder = GetComponent<CarMovementRecorder>();
-        _rb = GetComponent<Rigidbody>();
         startPoint.gameObject.SetActive(true);
         endPoint.gameObject.SetActive(true);
+        _rb = GetComponent<Rigidbody>();
+        _currentState = new CarIdleState(this);
     }
     
 
@@ -50,17 +50,12 @@ public class CarController : MonoBehaviour
 
     #endregion
     
-    private void SignUpEvents()
+    public void WinState()
     {
-        GameEvents.CompleteEvent += TrackCompleted;
-    }
-
-    private void TrackCompleted(GameObject obj)
-    {
-        if (obj== this.gameObject)
-        {
-            isTrackCompleted = true;
-        }
+        startPoint.gameObject.SetActive(false);
+        endPoint.gameObject.SetActive(false);
+        isTrackCompleted = true;
+        GameEvents.CompleteEvent?.Invoke(gameObject);
     }
 
     public void RecordMovement()
@@ -68,8 +63,9 @@ public class CarController : MonoBehaviour
         carMovementRecorder.RecordMovement(transform.position,transform.rotation);
     }
 
-    public void ChangeState(BaseState newState)
+    public void ChangeState(BaseState<CarController> newState)
     {
+        _currentState.Exit();
         _currentState = newState;
     }
 
@@ -99,4 +95,5 @@ public class CarController : MonoBehaviour
             ChangeState(new CarWinState(this));
         }
     }
+    
 }
