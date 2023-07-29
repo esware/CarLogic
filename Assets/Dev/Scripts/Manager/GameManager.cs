@@ -9,6 +9,9 @@ using UnityEngine;
         public static Action WinEvent;
         public static Action LoseEvent;
 
+        public static Action<GameObject> CompleteEvent;
+        public static Action FailEvent;
+
         public static void DestroyEvents()
         {
             WinEvent = null;
@@ -17,7 +20,7 @@ using UnityEngine;
         
     }
     
-    public class LevelManager : MonoBehaviour
+    public class GameManager : MonoBehaviour
     {
         [SerializeField] private bool transitionWithPrefab;
         [SerializeField] private GameData gameData;

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Managers;
+using UnityEngine;
 
 namespace Dev.Scripts.Car_Controller.CarStates
 {
@@ -6,7 +7,7 @@ namespace Dev.Scripts.Car_Controller.CarStates
     {
         public CarLoseState(CarController controller) : base(controller)
         {
-            Debug.Log("Game Lose ");
+            GameEvents.FailEvent?.Invoke();
         }
 
         public override void Update()

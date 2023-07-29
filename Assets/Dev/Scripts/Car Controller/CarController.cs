@@ -1,9 +1,12 @@
 ﻿using System;
 using Dev.Scripts.Car_Controller.CarStates;
+using Managers;
 using UnityEngine;
 
 public class CarController : MonoBehaviour
 {
+    [HideInInspector] public CarMovementRecorder carMovementRecorder;
+    [HideInInspector] public bool isTrackCompleted = false;
     private BaseState _currentState;
 
     [Space,Header("Car Movement Settings")]
@@ -11,28 +14,29 @@ public class CarController : MonoBehaviour
     public float turnSpeed = 100f;
 
     [Space,Header("Car Start && Target Points")]
-    public Transform startPosition;
-    public Transform endPosition;
+    public Transform startPoint;
+    public Transform endPoint;
     
 
     private Rigidbody _rb;
 
     #region Unity Methods
-
-    private void Awake()
-    {
-        _currentState = new CarIdleState(this);
-    }
-
+    
     private void Start()
     {
+        SignUpEvents();
         Init();
+        _currentState = new CarIdleState(this);
     }
 
     private void Init()
     {
+        carMovementRecorder = GetComponent<CarMovementRecorder>();
         _rb = GetComponent<Rigidbody>();
+        startPoint.gameObject.SetActive(true);
+        endPoint.gameObject.SetActive(true);
     }
+    
 
     private void Update()
     {
@@ -45,24 +49,24 @@ public class CarController : MonoBehaviour
     }
 
     #endregion
-
-    private void OnEnable()
-    {
-        transform.position = startPosition.position;
-    }
     
-
-    public void ResetPositionAndRotation()
+    private void SignUpEvents()
     {
-        transform.position = startPosition.position;
-        transform.rotation = Quaternion.identity;
-        
-        startPosition.gameObject.SetActive(false);
-        endPosition.gameObject.SetActive(false);
-        
-        gameObject.GetComponent<CarMovementRecorder>().StartPlayback();
+        GameEvents.CompleteEvent += TrackCompleted;
     }
 
+    private void TrackCompleted(GameObject obj)
+    {
+        if (obj== this.gameObject)
+        {
+            isTrackCompleted = true;
+        }
+    }
+
+    public void RecordMovement()
+    {
+        carMovementRecorder.RecordMovement(transform.position,transform.rotation);
+    }
 
     public void ChangeState(BaseState newState)
     {
@@ -90,15 +94,9 @@ public class CarController : MonoBehaviour
             ChangeState(new CarLoseState(this));
         }
         
-        if (other.CompareTag("Finish"))
+        if (other.gameObject == endPoint.gameObject)
         {
             ChangeState(new CarWinState(this));
         }
-    }
-
-
-    private void InstantinateCar()
-    {
-        //var carClone = Instantiate(carPrefab,)
     }
 }

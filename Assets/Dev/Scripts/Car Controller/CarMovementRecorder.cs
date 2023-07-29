@@ -4,35 +4,25 @@ using UnityEngine;
 
 public class CarMovementRecorder : MonoBehaviour
 {
-    public CarMovementData movementData;
-
-    public bool currentCarIsBeingDriven;
-
-    void Update()
-    {
-        if (currentCarIsBeingDriven)
-        {
-            RecordMovement(transform.position, transform.rotation);
-        }
-    }
-
-    void RecordMovement(Vector3 position, Quaternion rotation)
-    {
-        movementData.recordedPositions.Add(position);
-        movementData.recordedRotations.Add(rotation);
-    }
+    public List<Vector3> recordedPositions = new List<Vector3>();
+    public List<Quaternion> recordedRotations = new List<Quaternion>();
 
     public void StartPlayback()
     {
         StartCoroutine(PlaybackMovement());
     }
 
+    public void RecordMovement(Vector3 position, Quaternion rotation)
+    {
+        recordedPositions.Add(position);
+        recordedRotations.Add(rotation);
+    }
     IEnumerator PlaybackMovement()
     {
-        for (int i = 0; i < movementData.recordedPositions.Count; i++)
+        for (int i = 0; i < recordedPositions.Count; i++)
         {
-            Vector3 targetPosition = movementData.recordedPositions[i];
-            Quaternion targetRotation = movementData.recordedRotations[i];
+            Vector3 targetPosition = recordedPositions[i];
+            Quaternion targetRotation = recordedRotations[i];
             
             transform.position = targetPosition;
             transform.rotation = targetRotation;

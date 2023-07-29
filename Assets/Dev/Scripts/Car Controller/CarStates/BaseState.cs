@@ -16,6 +16,5 @@ namespace Dev.Scripts.Car_Controller.CarStates
 
         public abstract void Update();
         public abstract void FixedUpdate();
-        public virtual void LateUpdate(){}
     }
 }

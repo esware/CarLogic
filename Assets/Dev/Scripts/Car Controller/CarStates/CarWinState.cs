@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Managers;
+using UnityEngine;
 
 namespace Dev.Scripts.Car_Controller.CarStates
 {
@@ -6,8 +7,11 @@ namespace Dev.Scripts.Car_Controller.CarStates
     {
         public CarWinState(CarController controller) : base(controller)
         {
-            GetController.ResetPositionAndRotation();
-            GetController.GetComponent<CarMovementRecorder>().currentCarIsBeingDriven = false;
+            GameEvents.CompleteEvent?.Invoke(GetController.gameObject);
+            GetController.startPoint.gameObject.SetActive(false);
+            GetController.endPoint.gameObject.SetActive(false);
+            
+            GetController.ChangeState(new CarIdleState(GetController));
         }
 
         public override void Update()
