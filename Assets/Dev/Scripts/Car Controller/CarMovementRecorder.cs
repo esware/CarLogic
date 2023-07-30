@@ -1,16 +1,43 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class CarMovementRecorder : MonoBehaviour
 {
+    #region Inspector Properties
     public List<Vector3> recordedPositions = new List<Vector3>();
     public List<Quaternion> recordedRotations = new List<Quaternion>();
+    
+    #endregion
+
+    #region Private Variables
 
     private bool _isPlayBackOver = false;
+    private Coroutine _playbackCoroutine;
+
+    #endregion
+
+    public bool IsPlayBackOver
+    {
+        get => _isPlayBackOver;
+        set => _isPlayBackOver = value;
+    }
+
+    #region Custom Methods
+
     public void StartPlayback()
     {
-        StartCoroutine(PlaybackMovement());
+        _playbackCoroutine = StartCoroutine(PlaybackMovement());
+    }
+
+    public void StopPlayBack()
+    {
+        if (_playbackCoroutine != null)
+        {
+            StopCoroutine(_playbackCoroutine);
+            _playbackCoroutine = null; 
+        }
     }
 
     public void RecordMovement(Vector3 position, Quaternion rotation)
@@ -30,10 +57,8 @@ public class CarMovementRecorder : MonoBehaviour
 
             yield return new WaitForEndOfFrame();
         }
-
         _isPlayBackOver = true;
     }
 
-
-    public bool IsPlayBackOver() => _isPlayBackOver;
+    #endregion
 }

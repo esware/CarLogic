@@ -18,7 +18,7 @@ namespace Managers
 
         [Space, Header("Generate Level")] [Space, Header("Level Properties")]
         public int carCount;
-        public Vector2 gameAreaSize;
+        public Vector3 areaSize;
         public GameObject startPointPrefab;
         public GameObject endPointPrefab;
         
@@ -30,13 +30,11 @@ namespace Managers
 
         #endregion
 
-
         #region Private Properties
 
         private List<GameObject> _obstacleList = new List<GameObject>();
         private GameObject _startPointsParent;
         private GameObject _endPointsParent;
-        private GameObject _carParent;
         private GameObject _obstacleParent;
 
         #endregion
@@ -66,14 +64,14 @@ namespace Managers
 
                     if (i == carCount-1)
                     {
-                        obstacle.transform.localScale = new Vector3(1,1,30);
-                        obstacle.transform.position = new Vector3(startPoints[i].position.x, 1, 0);
+                        obstacle.transform.localScale = new Vector3(1,5,areaSize.x);
+                        obstacle.transform.position = new Vector3(areaSize.x/2, 1, 0);
                     }
                 }
                 else
                 {
-                    obstacle.transform.localScale = new Vector3(1,1,30);
-                    obstacle.transform.position = new Vector3(startPoints[i].position.x, 1, 0);
+                    obstacle.transform.localScale = new Vector3(1,5,areaSize.x);
+                    obstacle.transform.position = new Vector3(-areaSize.x/2, 1, 0);
                 }
                 
                 
@@ -83,7 +81,6 @@ namespace Managers
 
         public void CreateLevelPoints()
         {
-
             _startPointsParent = new GameObject();
             _startPointsParent.gameObject.name = "startPositionParent";
             _startPointsParent.transform.SetParent(transform);
@@ -92,36 +89,48 @@ namespace Managers
             _endPointsParent.gameObject.name = "endPositionParent";
             _endPointsParent.transform.SetParent(transform);
 
-            var distanceBetweenTwoPoints = gameAreaSize.x / (carCount-1);
+            float cubeSize = areaSize.x / carCount;
+            float halfSideLength = areaSize.x / 2f;
+            float halfCubeSize = cubeSize / 2f;
+
             for (int i = 0; i < carCount; i++)
             {
-                var startPointPosition = new Vector3(((-gameAreaSize.x/2 ) + (distanceBetweenTwoPoints)*i), 1,(-gameAreaSize.y/2 ));
+                float x = -halfSideLength + i * cubeSize + halfCubeSize;
+                float z = -halfSideLength +0* cubeSize + halfCubeSize;
+                Vector3 position = new Vector3(x, 0f, z);
                 
-                
-                var startPointGameObject = Instantiate(startPointPrefab, startPointPosition, Quaternion.identity, _startPointsParent.transform);
-                startPointGameObject.gameObject.name = "Baslangic Noktasi " + (i + 1);
-                
-                startPoints.Add(startPointGameObject.transform);
-                levelPoints.Add(startPointGameObject);
+                if (Mathf.Abs(position.x) < halfSideLength && Mathf.Abs(position.z) < halfSideLength)
+                {
+                    var startPointGameObject = Instantiate(startPointPrefab, position, Quaternion.identity, _startPointsParent.transform);
+                    startPointGameObject.gameObject.name = "Baslangic Noktasi " + (i + 1);
+
+                    startPoints.Add(startPointGameObject.transform);
+                    levelPoints.Add(startPointGameObject);
+                }
             }
-            
+
             for (int i = 0; i < carCount; i++)
             {
-                var endPointPosition = new Vector3((gameAreaSize.x/2 ) - (distanceBetweenTwoPoints)*i, 1,(gameAreaSize.y/2 ));
+                float x = -halfSideLength + i * cubeSize + halfCubeSize;
+                float z = halfSideLength +0* cubeSize - halfCubeSize;
+                Vector3 position = new Vector3(x, 0f, z);
                 
-                var endPointGameObject = Instantiate(endPointPrefab, endPointPosition, Quaternion.identity, _endPointsParent.transform);
+                var endPointGameObject = Instantiate(endPointPrefab, position, Quaternion.identity, _endPointsParent.transform);
                 endPointGameObject.gameObject.name = "Bitis Noktasi " + (i + 1);
-                
+
                 endPoints.Add(endPointGameObject.transform);
                 levelPoints.Add(endPointGameObject);
             }
+           
         }
+        
         
         public void ClearLevel()
         {
+            startPoints.Clear();
+            endPoints.Clear();
             levelPoints.Clear();
             _obstacleList.Clear();
-            DestroyImmediate(_carParent.gameObject);
             DestroyImmediate(_endPointsParent.gameObject);
             DestroyImmediate(_startPointsParent.gameObject);
             DestroyImmediate(_obstacleParent.gameObject);
@@ -149,7 +158,7 @@ namespace Managers
     }
 
     #region Editor
-
+#if UNITY_EDITOR
     [CustomEditor(typeof(LevelGenerator))]
     public class LevelGeneratorEditor : Editor
     {
@@ -181,8 +190,8 @@ namespace Managers
             serializedObject.ApplyModifiedProperties();
         }
     }
-
-        #endregion
+#endif
+    #endregion
 
 
 }

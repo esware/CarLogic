@@ -2,17 +2,13 @@
 
 namespace Dev.Scripts.Car_Controller.CarStates
 {
-    public class CarAIState:BaseState<CarController>
+    public class CarAIState:BaseState
     {
-        public CarAIState(CarController controller) : base(controller)
-        {
-            base.Controller.carMovementRecorder.StartPlayback();
-        }
-
         public override void Update()
         {
-            if (Controller.carMovementRecorder.IsPlayBackOver())
+            if (Controller.carMovementRecorder.IsPlayBackOver)
             {
+                Controller.carMovementRecorder.IsPlayBackOver = false;
                 Controller.ChangeState(new CarIdleState(Controller));
             }
         }
@@ -22,9 +18,9 @@ namespace Dev.Scripts.Car_Controller.CarStates
             
         }
 
-        public override void Exit()
+        public CarAIState(CarController controller) : base(controller)
         {
-            
+            MovementRecorder.StartPlayback();
         }
     }
 }

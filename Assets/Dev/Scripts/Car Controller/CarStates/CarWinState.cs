@@ -3,11 +3,12 @@ using UnityEngine;
 
 namespace Dev.Scripts.Car_Controller.CarStates
 {
-    public class CarWinState:BaseState<CarController>
+    public class CarWinState:BaseState
     {
         public CarWinState(CarController controller) : base(controller)
         {
             controller.WinState();
+            trailController.StopTrail();
         }
 
         public override void Update()
@@ -16,11 +17,6 @@ namespace Dev.Scripts.Car_Controller.CarStates
         }
 
         public override void FixedUpdate()
-        {
-            
-        }
-
-        public override void Exit()
         {
             
         }

@@ -4,10 +4,6 @@ namespace Dev.Scripts
 {
     public static class Obstacle
     {
-        public static Vector3 scale;
-        public static Vector3 position;
-
-
         public static Vector3 CalculateScale(Vector3 tempScale)
         {
             var newScale = Vector3.one;

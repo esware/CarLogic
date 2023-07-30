@@ -1,15 +1,19 @@
-﻿using UnityEngine;
+﻿using Dev.Scripts;
+using UnityEngine;
 
-public abstract class BaseState<T>  where T: MonoBehaviour
+public abstract class BaseState
 {
-    protected readonly T Controller;
+    protected readonly CarController Controller;
+    protected readonly CarMovementRecorder MovementRecorder;
+    protected readonly TrailController trailController;
 
-    protected BaseState(T controller)
+    protected BaseState(CarController controller)
     {
         Controller = controller;
+        MovementRecorder = controller.carMovementRecorder;
+        trailController = controller.GetComponent<TrailController>();
     }
 
     public abstract void Update();
     public abstract void FixedUpdate();
-    public abstract void Exit();
 }

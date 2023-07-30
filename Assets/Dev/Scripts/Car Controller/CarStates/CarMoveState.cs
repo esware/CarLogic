@@ -2,11 +2,12 @@
 
 namespace Dev.Scripts.Car_Controller.CarStates
 {
-    public class CarMoveState:BaseState<CarController>
+    public class CarMoveState:BaseState
     {
         public CarMoveState(CarController controller) : base(controller)
         {
-            
+            controller.ChangeCarColor(Color.yellow);
+            trailController.StartTrail();
         }
 
         public override void Update()
@@ -18,11 +19,6 @@ namespace Dev.Scripts.Car_Controller.CarStates
         {
             Controller.MoveCar();
             Controller.TurnCar();
-        }
-
-        public override void Exit()
-        {
-            
         }
     }
 }

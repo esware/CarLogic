@@ -1,0 +1,20 @@
+{
+    "name": "ToonyColorsPro.Demo.Editor",
+    "references": [
+        "ToonyColorsPro2.Demo",
+        "UnityEditor.UI",
+        "UnityEngine.UI",
+        "UnityEditor.TestRunner",
+        "UnityEngine.TestRunner"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": []
+}

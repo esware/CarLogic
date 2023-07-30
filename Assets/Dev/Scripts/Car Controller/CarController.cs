@@ -3,12 +3,16 @@ using Dev.Scripts.Car_Controller.CarStates;
 using Managers;
 using UnityEngine;
 
+[RequireComponent(typeof(CarMovementRecorder))]
 public class CarController : MonoBehaviour
 {
-    private BaseState<CarController> _currentState;
+    private BaseState _currentState;
+    private Rigidbody _rb;
     
     [HideInInspector] public CarMovementRecorder carMovementRecorder;
-     public bool isTrackCompleted = false;
+    public bool isTrackCompleted = false;
+
+    #region Inspector Properties
 
     [Space,Header("Car Movement Settings")]
     public float speed = 10f;
@@ -17,9 +21,9 @@ public class CarController : MonoBehaviour
     [Space,Header("Car Start && Target Points")]
     public Transform startPoint;
     public Transform endPoint;
-    
 
-    private Rigidbody _rb;
+    #endregion
+    
 
     #region Unity Methods
     
@@ -49,7 +53,18 @@ public class CarController : MonoBehaviour
     }
 
     #endregion
-    
+
+    #region State Methods
+
+    public void IdleState()
+    {
+        ChangeCarColor(Color.blue);
+        carMovementRecorder.StopPlayBack();
+        var transform1 = transform;
+        transform1.position = startPoint.position;
+        transform1.rotation = Quaternion.identity;
+    }
+
     public void WinState()
     {
         startPoint.gameObject.SetActive(false);
@@ -63,10 +78,18 @@ public class CarController : MonoBehaviour
         carMovementRecorder.RecordMovement(transform.position,transform.rotation);
     }
 
-    public void ChangeState(BaseState<CarController> newState)
+    public void ChangeState(BaseState newState)
     {
-        _currentState.Exit();
         _currentState = newState;
+    }
+
+    public void ChangeCarColor(Color color)
+    {
+        Material newMat = new Material(Shader.Find("Standard"));
+        newMat.color = color;
+        
+        MeshRenderer carRenderer = transform.GetComponent<MeshRenderer>();
+        carRenderer.material = newMat;
     }
 
     public void MoveCar()
@@ -82,6 +105,9 @@ public class CarController : MonoBehaviour
         Quaternion turnRotation = Quaternion.Euler(0f, turnAmount, 0f);
         _rb.MoveRotation(_rb.rotation * turnRotation);
     }
+
+    #endregion
+    
     
     private void OnTriggerEnter(Collider other)
     {
@@ -93,6 +119,11 @@ public class CarController : MonoBehaviour
         if (other.gameObject == endPoint.gameObject)
         {
             ChangeState(new CarWinState(this));
+        }
+
+        if (other.CompareTag("Player"))
+        {
+            ChangeState(new CarLoseState(this));
         }
     }
     

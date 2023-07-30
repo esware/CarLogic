@@ -1,18 +1,15 @@
 ﻿using Dev.Scripts.Car_Controller.CarStates;
 using UnityEngine;
 
-public class CarIdleState:BaseState<CarController>
+public class CarIdleState:BaseState
 {
     public CarIdleState(CarController controller) : base(controller)
     {
-        var transform1 = controller.transform;
-        transform1.position = controller.startPoint.position;
-        transform1.rotation = Quaternion.identity;
+        controller.IdleState();
     }
 
     public override void Update()
     {
-
         if (Input.GetMouseButtonDown(0))
         {
             if (!Controller.isTrackCompleted)
@@ -27,11 +24,6 @@ public class CarIdleState:BaseState<CarController>
     }
 
     public override void FixedUpdate()
-    {
-        
-    }
-
-    public override void Exit()
     {
         
     }

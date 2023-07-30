@@ -7,14 +7,18 @@ namespace Dev.Scripts.Car_Controller
 {
     public class CarManager : MonoBehaviour
     {
+        #region Inspector Properties
+        [SerializeField] private List<GameObject> npcCar = new List<GameObject>();
+        [SerializeField] private GameObject carPrefab;
+        #endregion
+
+        #region Private variables
+        
         private ILevelDataProvider _levelDataProvider;
-
-        public List<GameObject> npcCar = new List<GameObject>();
-        public GameObject carPrefab;
-
         private List<Transform> _startPoints = new List<Transform>();
         private List<Transform> _endPoints = new List<Transform>();
-        private int _carCounter = 0;
+
+        #endregion
 
         private void Awake()
         {
@@ -49,13 +53,34 @@ namespace Dev.Scripts.Car_Controller
             GameEvents.FailEvent += FailTrack;
         }
 
+        #region Custom Methods
+
+        private List<Transform> GetPoints()
+        {
+            var startPointItem = Random.Range(0, _startPoints.Count);
+            var endPointItem = Random.Range(0, _endPoints.Count);
+            
+            var startPoint = _startPoints[startPointItem];
+            var endPoint = _endPoints[endPointItem];
+            
+            List<Transform> points = new List<Transform>();
+            points.Add(startPoint);
+            points.Add(endPoint);
+            
+            _startPoints.Remove(startPoint);
+            _endPoints.Remove(endPoint);
+
+
+            return points;
+        }
+
         private void CreateCar()
         {
-            var car = Instantiate(carPrefab, _startPoints[0].position, Quaternion.identity);
+            var points = GetPoints();
+            var car = Instantiate(carPrefab, points[0].position, Quaternion.identity);
             var carController = car.GetComponent<CarController>();
-            carController.startPoint = _startPoints[0];
-            carController.endPoint = _endPoints[0];
-            car.gameObject.name = _carCounter.ToString();
+            carController.startPoint = points[0];
+            carController.endPoint = points[1];
         }
 
         private void CompleteTrack(GameObject car)
@@ -65,19 +90,20 @@ namespace Dev.Scripts.Car_Controller
                 Debug.Log("Game Win");
                 return;
             }
-            _carCounter++;
-            var startPoint = _startPoints[_carCounter];
-            npcCar.Add(car);
 
-            var newCar = Instantiate(carPrefab, startPoint.position, Quaternion.identity);
-            newCar.GetComponent<CarController>().startPoint = startPoint;
-            newCar.GetComponent<CarController>().endPoint = _endPoints[_carCounter];
-            
+            npcCar.Add(car);
+            CreateCar();
         }
 
         private void FailTrack()
         {
-            // Eğer başarısızlık durumunda yapılacak işlemler varsa buraya ekleyebilirsiniz.
+            foreach (var car in npcCar)
+            {
+                var carController = car.GetComponent<CarController>();
+                carController.ChangeState(new CarIdleState(carController));
+            }
         }
+
+        #endregion
     }
 }
