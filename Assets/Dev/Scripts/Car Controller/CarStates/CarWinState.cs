@@ -15,10 +15,5 @@ namespace Dev.Scripts.Car_Controller.CarStates
         {
             Controller.ChangeState(new CarIdleState(Controller));
         }
-
-        public override void FixedUpdate()
-        {
-            
-        }
     }
 }

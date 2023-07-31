@@ -12,8 +12,8 @@ GameObject:
   - component: {fileID: 978362959373954162}
   - component: {fileID: 978362959373954163}
   - component: {fileID: 978362959373954164}
-  - component: {fileID: 978362959373954175}
   - component: {fileID: 978362959373954173}
+  - component: {fileID: 978362959373954175}
   - component: {fileID: 5954606450797527554}
   - component: {fileID: 94574349642070241}
   - component: {fileID: 7051278577313898519}
@@ -102,20 +102,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &978362959373954175
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 978362959373954167}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bb990be221a94c528ac0d8029f5f69b7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  recordedPositions: []
-  recordedRotations: []
 --- !u!54 &978362959373954173
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -132,6 +118,20 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &978362959373954175
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 978362959373954167}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bb990be221a94c528ac0d8029f5f69b7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  recordedPositions: []
+  recordedRotations: []
 --- !u!114 &5954606450797527554
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -144,12 +144,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b41c3c1df72742ec92b2d6c72a1c2f95, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  carMovementRecorder: {fileID: 0}
-  isTrackCompleted: 0
-  speed: 10
+  speed: 6
   turnSpeed: 150
   startPoint: {fileID: 0}
   endPoint: {fileID: 0}
+  carMovementRecorder: {fileID: 0}
+  isTrackCompleted: 0
 --- !u!114 &94574349642070241
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -162,7 +162,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a4864183f49d4eb8b98c94f3753cd432, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  trailColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!96 &7051278577313898519
 TrailRenderer:
   serializedVersion: 2

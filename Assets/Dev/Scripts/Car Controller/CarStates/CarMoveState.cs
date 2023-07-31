@@ -12,13 +12,35 @@ namespace Dev.Scripts.Car_Controller.CarStates
 
         public override void Update()
         {
-           Controller.RecordMovement();
+            
         }
 
         public override void FixedUpdate()
         {
             Controller.MoveCar();
-            Controller.TurnCar();
+        }
+
+        public override void LateUpdate()
+        {
+            Controller.RecordMovement();
+        }
+
+        public override void OnTriggerEnter(Collider other)
+        {
+            if (other.CompareTag("Wall"))
+            {
+                Controller.ChangeState(new CarLoseState(Controller));
+            }
+        
+            if (other.gameObject == Controller.endPoint.gameObject)
+            {
+                Controller.ChangeState(new CarWinState(Controller));
+            }
+
+            if (other.CompareTag("Player"))
+            {
+                Controller.ChangeState(new CarLoseState(Controller));
+            }
         }
     }
 }

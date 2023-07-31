@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Dev.Scripts;
+using ScriptableObjects.Scripts;
 using Unity.Mathematics;
 using UnityEditor;
 using UnityEngine;
@@ -8,145 +9,91 @@ using Random = UnityEngine.Random;
 
 namespace Managers
 {
-    public class LevelGenerator:MonoBehaviour,ILevelDataProvider
+    public class LevelGenerator : MonoBehaviour, ILevelDataProvider
     {
-        
-        [HideInInspector] public List<Transform> startPoints = new List<Transform>();
-        [HideInInspector] public List<Transform> endPoints = new List<Transform>();
+        #region Inspector Properties
 
-        #region Inspector
+        [SerializeField] private int carCount;
 
-        [Space, Header("Generate Level")] [Space, Header("Level Properties")]
-        public int carCount;
-        public Vector3 areaSize;
-        public GameObject startPointPrefab;
-        public GameObject endPointPrefab;
-        
-        [Space, Header("Add Obstacle")] [SerializeField]
-        private GameObject obstaclePrefab;
-        
-        [Space,Header("Created Points List")]
-        public List<GameObject> levelPoints = new List<GameObject>();
+        [Space, Header("Add Obstacle")]
+        [SerializeField] private GameObject obstaclePrefab;
+        [SerializeField] private Transform obstacleParent;
+        [SerializeField] private List<GameObject> obstacleList = new List<GameObject>();
 
-        #endregion
+        [Space, Header("Add Start Points")]
+        [SerializeField] private GameObject startPointPrefab;
+        [SerializeField] private Transform startPointsParent;
 
-        #region Private Properties
-
-        private List<GameObject> _obstacleList = new List<GameObject>();
-        private GameObject _startPointsParent;
-        private GameObject _endPointsParent;
-        private GameObject _obstacleParent;
+        [Space, Header("Add End Points")]
+        [SerializeField] private GameObject endPointPrefab;
+        [SerializeField] private Transform endPointsParent;
 
         #endregion
 
-        private void Awake()
+        #region List Properties
+
+        public List<Transform> startPointList = new List<Transform>();
+        public List<Transform> endPointList = new List<Transform>();
+
+        #endregion
+
+        public void AddObstacle()
         {
-            CreateLevelPoints();
-            GenerateObstacles();
+            var obstacleClone = Instantiate(obstaclePrefab, Vector3.zero, Quaternion.identity, obstacleParent);
+            obstacleList.Add(obstacleClone);
         }
 
-        public void GenerateObstacles()
+        public void AddStartPoints()
         {
-            _obstacleParent = new GameObject("Obstacle Parent");
-            _obstacleParent.transform.SetParent(transform);
-            
-            for (int i = 0; i < carCount; i++)
-            {
-
-                var zPos = Random.Range(startPoints[i].position.z+8, endPoints[i].position.z-8);
-                var obstaclePosition = new Vector3(startPoints[i].position.x, 1, zPos);
-
-                GameObject obstacle = Instantiate(obstaclePrefab, obstaclePosition, Quaternion.identity,_obstacleParent.transform);
-                
-                if (_obstacleList.Count>0)
-                {
-                    obstacle.transform.localScale = Obstacle.CalculateScale(_obstacleList[i - 1].transform.localScale);
-
-                    if (i == carCount-1)
-                    {
-                        obstacle.transform.localScale = new Vector3(1,5,areaSize.x);
-                        obstacle.transform.position = new Vector3(areaSize.x/2, 1, 0);
-                    }
-                }
-                else
-                {
-                    obstacle.transform.localScale = new Vector3(1,5,areaSize.x);
-                    obstacle.transform.position = new Vector3(-areaSize.x/2, 1, 0);
-                }
-                
-                
-                _obstacleList.Add(obstacle);
-            }
+            var startPointClone = Instantiate(startPointPrefab, Vector3.zero, Quaternion.identity, startPointsParent);
+            startPointList.Add(startPointClone.transform);
         }
 
-        public void CreateLevelPoints()
+        public void AddEndPoints()
         {
-            _startPointsParent = new GameObject();
-            _startPointsParent.gameObject.name = "startPositionParent";
-            _startPointsParent.transform.SetParent(transform);
-
-            _endPointsParent = new GameObject();
-            _endPointsParent.gameObject.name = "endPositionParent";
-            _endPointsParent.transform.SetParent(transform);
-
-            float cubeSize = areaSize.x / carCount;
-            float halfSideLength = areaSize.x / 2f;
-            float halfCubeSize = cubeSize / 2f;
-
-            for (int i = 0; i < carCount; i++)
-            {
-                float x = -halfSideLength + i * cubeSize + halfCubeSize;
-                float z = -halfSideLength +0* cubeSize + halfCubeSize;
-                Vector3 position = new Vector3(x, 0f, z);
-                
-                if (Mathf.Abs(position.x) < halfSideLength && Mathf.Abs(position.z) < halfSideLength)
-                {
-                    var startPointGameObject = Instantiate(startPointPrefab, position, Quaternion.identity, _startPointsParent.transform);
-                    startPointGameObject.gameObject.name = "Baslangic Noktasi " + (i + 1);
-
-                    startPoints.Add(startPointGameObject.transform);
-                    levelPoints.Add(startPointGameObject);
-                }
-            }
-
-            for (int i = 0; i < carCount; i++)
-            {
-                float x = -halfSideLength + i * cubeSize + halfCubeSize;
-                float z = halfSideLength +0* cubeSize - halfCubeSize;
-                Vector3 position = new Vector3(x, 0f, z);
-                
-                var endPointGameObject = Instantiate(endPointPrefab, position, Quaternion.identity, _endPointsParent.transform);
-                endPointGameObject.gameObject.name = "Bitis Noktasi " + (i + 1);
-
-                endPoints.Add(endPointGameObject.transform);
-                levelPoints.Add(endPointGameObject);
-            }
-           
+            var endPointClone = Instantiate(endPointPrefab, Vector3.zero, Quaternion.identity, endPointsParent);
+            endPointList.Add(endPointClone.transform);
         }
-        
-        
+
+        public void BuildLevel()
+        {
+#if UNITY_EDITOR
+            PrefabUtility.ApplyPrefabInstance(gameObject, InteractionMode.UserAction);
+            Debug.Log("Prefab changes applied.");
+#endif
+        }
+
         public void ClearLevel()
         {
-            startPoints.Clear();
-            endPoints.Clear();
-            levelPoints.Clear();
-            _obstacleList.Clear();
-            DestroyImmediate(_endPointsParent.gameObject);
-            DestroyImmediate(_startPointsParent.gameObject);
-            DestroyImmediate(_obstacleParent.gameObject);
+            foreach (var obstacle in obstacleList)
+            {
+                DestroyImmediate(obstacle.gameObject);
+            }
+            obstacleList.Clear();
+
+            foreach (var endPoint in endPointList)
+            {
+                DestroyImmediate(endPoint.gameObject);
+            }
+            endPointList.Clear();
+
+            foreach (var startPoint in startPointList)
+            {
+                DestroyImmediate(startPoint.gameObject);
+            }
+            startPointList.Clear();
         }
 
         #region Provider Methods
 
         public List<Transform> GetStartPoints()
         {
-
-            return startPoints;
+            return startPointList;
         }
-        
+
         public List<Transform> GetEndPoints()
         {
-            return endPoints ;
+            return endPointList;
         }
 
         public int GetCarCount()
@@ -174,17 +121,36 @@ namespace Managers
             DrawDefaultInspector();
 
             serializedObject.Update();
-        
+            EditorGUILayout.Separator();
+            EditorGUILayout.Space(10);
 
-            if (GUILayout.Button("Create Level"))
+            if (GUILayout.Button("Add Obstacle"))
             {
-                levelGenerator.CreateLevelPoints();
-                levelGenerator.GenerateObstacles();
+                levelGenerator.AddObstacle();
             }
+
+            if (GUILayout.Button("Add StartPoints"))
+            {
+                levelGenerator.AddStartPoints();
+            }
+
+            if (GUILayout.Button("Add EndPoints"))
+            {
+                levelGenerator.AddEndPoints();
+            }
+
+            EditorGUILayout.Separator();
+            EditorGUILayout.Space(10);
 
             if (GUILayout.Button("Reset Level"))
             {
                 levelGenerator.ClearLevel();
+            }
+
+            EditorGUILayout.HelpBox("Build after making all the changes or you will not be able to undo the changes you have made", MessageType.Warning);
+            if (GUILayout.Button("Build Level"))
+            {
+                levelGenerator.BuildLevel();
             }
 
             serializedObject.ApplyModifiedProperties();
@@ -192,6 +158,4 @@ namespace Managers
     }
 #endif
     #endregion
-
-
 }

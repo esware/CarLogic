@@ -15,5 +15,7 @@ public abstract class BaseState
     }
 
     public abstract void Update();
-    public abstract void FixedUpdate();
+    public virtual void FixedUpdate(){}
+    public virtual void LateUpdate(){}
+    public virtual void OnTriggerEnter(Collider other){}
 }

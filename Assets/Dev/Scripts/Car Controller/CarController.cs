@@ -1,32 +1,33 @@
-﻿using System;
-using Dev.Scripts.Car_Controller.CarStates;
+﻿using DG.Tweening;
 using Managers;
 using UnityEngine;
+using VHS;
 
 [RequireComponent(typeof(CarMovementRecorder))]
 public class CarController : MonoBehaviour
 {
-    private BaseState _currentState;
-    private Rigidbody _rb;
-    
-    [HideInInspector] public CarMovementRecorder carMovementRecorder;
-    public bool isTrackCompleted = false;
-
     #region Inspector Properties
-
-    [Space,Header("Car Movement Settings")]
+    [Header("Car Movement Settings")]
     public float speed = 10f;
     public float turnSpeed = 100f;
 
-    [Space,Header("Car Start && Target Points")]
+    [Header("Car Start && Target Points")]
     public Transform startPoint;
     public Transform endPoint;
+    
+    #endregion
+
+    #region Private Variables
+
+    [HideInInspector] public CarMovementRecorder carMovementRecorder;
+    [HideInInspector] public bool isTrackCompleted;
+
+    private Rigidbody _rb;
+    private BaseState _currentState;
 
     #endregion
-    
 
     #region Unity Methods
-    
     private void Start()
     {
         Init();
@@ -37,10 +38,12 @@ public class CarController : MonoBehaviour
         carMovementRecorder = GetComponent<CarMovementRecorder>();
         startPoint.gameObject.SetActive(true);
         endPoint.gameObject.SetActive(true);
+        
+        transform.DOLookAt(endPoint.position, 0.5f, AxisConstraint.Y);
+
         _rb = GetComponent<Rigidbody>();
         _currentState = new CarIdleState(this);
     }
-    
 
     private void Update()
     {
@@ -52,17 +55,50 @@ public class CarController : MonoBehaviour
         _currentState.FixedUpdate();
     }
 
+    private void LateUpdate()
+    {
+        _currentState.LateUpdate();
+    }
     #endregion
 
     #region State Methods
+    public void ChangeState(BaseState newState)
+    {
+        _currentState = newState;
+    }
+
+    public void RecordMovement()
+    {
+        carMovementRecorder?.RecordMovement(transform.position, transform.rotation);
+    }
+
+    public void MoveCar()
+    {
+        _rb.MovePosition(_rb.position + transform.forward * (speed * Time.deltaTime));
+
+        float turnAmount = InputHandler.Instance.Direction * turnSpeed * Time.deltaTime;
+        Quaternion turnRotation = Quaternion.Euler(0f, turnAmount, 0f);
+
+        _rb.MoveRotation(_rb.rotation * turnRotation);
+    }
+    #endregion
+
+    #region Public Methods
+    public void ChangeCarColor(Color color)
+    {
+        Material newMat = new Material(Shader.Find("Standard"));
+        newMat.color = color;
+
+        MeshRenderer carRenderer = transform.GetComponent<MeshRenderer>();
+        carRenderer.material = newMat;
+    }
 
     public void IdleState()
     {
         ChangeCarColor(Color.blue);
-        carMovementRecorder.StopPlayBack();
-        var transform1 = transform;
-        transform1.position = startPoint.position;
-        transform1.rotation = Quaternion.identity;
+        carMovementRecorder?.StopPlayBack();
+        transform.position = startPoint.position;
+        transform.rotation = Quaternion.identity;
     }
 
     public void WinState()
@@ -72,59 +108,12 @@ public class CarController : MonoBehaviour
         isTrackCompleted = true;
         GameEvents.CompleteEvent?.Invoke(gameObject);
     }
-
-    public void RecordMovement()
-    {
-        carMovementRecorder.RecordMovement(transform.position,transform.rotation);
-    }
-
-    public void ChangeState(BaseState newState)
-    {
-        _currentState = newState;
-    }
-
-    public void ChangeCarColor(Color color)
-    {
-        Material newMat = new Material(Shader.Find("Standard"));
-        newMat.color = color;
-        
-        MeshRenderer carRenderer = transform.GetComponent<MeshRenderer>();
-        carRenderer.material = newMat;
-    }
-
-    public void MoveCar()
-    {
-        _rb.MovePosition(_rb.position + transform.forward *(speed * Time.deltaTime));
-    }
-
-    public void TurnCar()
-    {
-        float horizontalInput = Input.GetAxis("Horizontal");
-        float turnAmount = horizontalInput * turnSpeed * Time.deltaTime;
-        
-        Quaternion turnRotation = Quaternion.Euler(0f, turnAmount, 0f);
-        _rb.MoveRotation(_rb.rotation * turnRotation);
-    }
-
     #endregion
-    
-    
+
+    #region Collision Handling
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Wall"))
-        {
-            ChangeState(new CarLoseState(this));
-        }
-        
-        if (other.gameObject == endPoint.gameObject)
-        {
-            ChangeState(new CarWinState(this));
-        }
-
-        if (other.CompareTag("Player"))
-        {
-            ChangeState(new CarLoseState(this));
-        }
+        _currentState.OnTriggerEnter(other);
     }
-    
+    #endregion
 }

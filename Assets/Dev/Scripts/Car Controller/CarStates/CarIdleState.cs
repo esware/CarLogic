@@ -6,6 +6,7 @@ public class CarIdleState:BaseState
     public CarIdleState(CarController controller) : base(controller)
     {
         controller.IdleState();
+        trailController.StartTrail();
     }
 
     public override void Update()
@@ -21,10 +22,5 @@ public class CarIdleState:BaseState
                 Controller.ChangeState(new CarAIState(Controller));
             }
         }
-    }
-
-    public override void FixedUpdate()
-    {
-        
     }
 }

@@ -12,6 +12,14 @@ using UnityEngine;
         public static Action<GameObject> CompleteEvent;
         public static Action FailEvent;
 
+        public struct InputEvents
+        {
+            public static Action LeftButtonClicked;
+            public static Action RightButtonClicked;
+            public static Action LeftButtonReleased;
+            public static Action RightButtonReleased;
+        }
+
         public static void DestroyEvents()
         {
             WinEvent = null;
